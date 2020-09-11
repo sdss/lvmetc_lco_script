@@ -1,0 +1,24 @@
+2020-09-11 20:08:59.504340 - Start
+0:00:00.008354 - Done Defining Parameters
+0:00:00.008378 - Done making lam array
+0:00:00.240100 - Done making klam array
+1.1785443909016364e-17
+1.1785443923247475e-17
+1.1785444050010756e-17
+0:00:00.488868 - Done making slam array
+21.69644801626727
+4.822488215157895e-18
+4.879996919077568
+4.879996898635342
+4.879996775877694
+1.0846810926854896e-18
+0:00:00.552533 - Done making flux arrays
+0:00:00.552544 - Done adding line to klam array
+0:00:00.566710 - Done making elam array
+0:00:00.611379 - Done making electron arrays
+0:00:01.105269 - Done making S/N arrays
+0:00:01.198231 - Done writing ASCII
+0:00:01.400702 - Done writing FITS
+0:00:01.453875 - Done Plotting
+0:00:02.430822 - Done Outputing Plots
+0:00:02.430838 - End
