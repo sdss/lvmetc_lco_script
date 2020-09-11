@@ -1,5 +1,6 @@
 # Local Volume Mapper (LVM) Exposure Time Calculator
 # adapted from the Las Campanas Observatory ETC
+# original files: https://github.com/gblancm/lcoetc
 #
 # 2017-08-08: This is a BETA Version written by Guillermo A. Blanc. It has not been validated. Use at your own risk.
 # 2020-09-09: Ported from a cgi web interface to a stand alone python script by Kathryn Kreckel.
