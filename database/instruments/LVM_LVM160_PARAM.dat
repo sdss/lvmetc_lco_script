@@ -1,0 +1,24 @@
+# Configuration file for LVM on the LVM-160 
+# ------------------------------------------
+# ATEL: Telescope Collecting Area [cm2]
+# LMIN: Minimum Wavelength [A]
+# LMAX: Maximum Wavelength [A]
+# DSPAX: Spaxel Size [arcsec] (asumming square MLA spaxels)
+# DFIB: Fiber FWHM [pixels]
+# DDISP: Dispersion [A/pixel]
+# DLSF: Optics Line Spread Function FWHM [A] (for an infinitely small fiber)
+# GAIN: Gain [e/ADU]
+# RDN: Read Noise [e]
+# DARK: Dark Current [e/s]
+# ------------------------------------------
+ATEL  150.8 	      
+LMIN  3650
+LMAX  9800
+DSPAX 37
+DFIB  3.4
+DDISP 0.5
+DLSF  1.0
+GAIN  1.0
+RDN   3.0
+DARK  0.003
+
