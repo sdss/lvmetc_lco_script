@@ -1,0 +1,16 @@
+template        A0V_Pickles.dat
+abmag           23.5
+tempfilter      sdss_g.dat
+addline         0
+linelam         6563.0
+lineflux        3e-18
+linefwhm        5.0
+telescope       LVM160
+binspat         1
+binspec         1
+nmoon           0
+amass           1.2
+dpsf            0.6
+texp            300
+nexp            3
+aper            4
