@@ -6,7 +6,7 @@ Local Volume Mapper (LVM) Exposure Time Calculator
 
 To install copy python script lvmetc_lco_script.py and corresponding database folder (database/) and output folder (output/)
 
-Script outputs a log file (lvmetc_log_default.txt) along with an ASCII Table with Results (lvmetc_out_default.dat), a FITS with Simulated 2D Spectrum (lvmetc_out.fits) and relevant plots (lvmetc_out_default.png)
+Script outputs a log file (lvmetc_log_default.txt) along with an ASCII Table with Results (lvmetc_out_default.dat), a FITS with Simulated 2D Spectrum (lvmetc_out_default.fits) and relevant plots (lvmetc_out_default.png)
 
 original files can be found here: https://github.com/gblancm/lcoetc
 
