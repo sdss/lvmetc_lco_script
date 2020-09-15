@@ -3,7 +3,7 @@
 # original files: https://github.com/gblancm/lcoetc
 #
 # 2017-08-08: This is a BETA Version written by Guillermo A. Blanc. It has not been validated. Use at your own risk.
-# 2020-09-09: Ported from a cgi web interface to a stand alone python script by Kathryn Kreckel.
+# 2020-09-15: Ported from a cgi web interface to a stand alone python script by Kathryn Kreckel.
 
 
 
@@ -263,25 +263,6 @@ dbdir='database'
 #tmpdir='/Users/gblanc/lcoetc/tmp'
 tmpdir='output'
 
-# Remove temporary files
-if os.path.isfile(tmpdir+"/lvmetc_out.dat"):
-    os.remove(tmpdir+"/lvmetc_out.dat")
-if os.path.isfile(tmpdir+"/lvmetc_out.fits"):
-    os.remove(tmpdir+"/lvmetc_out.fits")
-if os.path.isfile(tmpdir+"/lvmetc_out.png"):
-    os.remove(tmpdir+"/lvmetc_out.png")
-
-c=2.99792458e18   # Speed of light in [A/s]
-
-# Check time and start log file
-startTime = datetime.now()
-logf=open(tmpdir+'/lvmetc_log.txt', 'w')
-logf.write(str(startTime)+' - Start\n')
-
-#Deals with inputing data into python from the html form
-#form = cgi.FieldStorage()
-
-
 #read in the configuration parameters
 configfile="config_file.txt"
 d = {}
@@ -289,6 +270,27 @@ with open(configfile) as f:
     for line in f:
        (key, val) = line.split()
        d[key] = val
+
+# Remove temporary files
+if os.path.isfile(tmpdir+"/lvmetc_out_"+d["outpref"]+".dat"):
+    os.remove(tmpdir+"/lvmetc_out_"+d["outpref"]+".dat")
+if os.path.isfile(tmpdir+"/lvmetc_out_"+d["outpref"]+".fits"):
+    os.remove(tmpdir+"/lvmetc_out_"+d["outpref"]+".fits")
+if os.path.isfile(tmpdir+"/lvmetc_out_"+d["outpref"]+".png"):
+    os.remove(tmpdir+"/lvmetc_out_"+d["outpref"]+".png")
+
+c=2.99792458e18   # Speed of light in [A/s]
+
+# Check time and start log file
+startTime = datetime.now()
+logf=open(tmpdir+'/lvmetc_log_'+d["outpref"]+'.txt', 'w')
+logf.write(str(startTime)+' - Start\n')
+
+#Deals with inputing data into python from the html form
+#form = cgi.FieldStorage()
+
+
+
 
 # Define parameters from HTML Form
 ofile=dbdir+'/object/'+d["template"]
@@ -418,7 +420,7 @@ logf.write(str(datetime.now() - startTime)+" - Done making S/N arrays\n")
 
 #ascii.write([lam, outivar[0], outivar[1], outivar[2], outaper[0], outaper[1], outaper[2], outapersky[1]], tmpdir+'/lvmetc_out.dat', format='commented_header', names=['Wavelength_[A]', 'S/N_Optimal', 'S_Optimal_[e]', 'N_Optimal_[e]', 'S/N_Aperture', 'S_Aperture_[e]', 'N_Aperture_[e]', 'SKY_Aperture_[e]'], formats={'Wavelength_[A]':'%.3f', 'S/N_Optimal':'%.2f', 'S_Optimal_[e]':'%.2f', 'N_Optimal_[e]':'%.2f', 'S/N_Aperture':'%.2f', 'S_Aperture_[e]':'%.2f', 'N_Aperture_[e]':'%.2f', 'SKY_Aperture_[e]':'%.2f'})
 
-ascii.write([lam, outaper[0], outaper[1], outaper[2], outapersky[1], outapercoadd[0], outapercoadd[1], outapercoadd[2], nexp*outapersky[1]], tmpdir+'/lvmetc_out.dat', format='commented_header', names=['Wavelength_[A]', 'S/N_Aperture', 'S_Aperture_[e]', 'N_Aperture_[e]', 'SKY_Aperture_[e]', 'S/N_Aperture_Coadd', 'S_Aperture_Coadd_[e]', 'N_Aperture_Coadd_[e]', 'SKY_Aperture_Coadd_[e]'], formats={'Wavelength_[A]':'%.3f', 'S/N_Aperture':'%.2f', 'S_Aperture_[e]':'%.2f', 'N_Aperture_[e]':'%.2f', 'SKY_Aperture_[e]':'%.2f', 'S/N_Aperture_Coadd':'%.2f', 'S_Aperture_Coadd_[e]':'%.2f', 'N_Aperture_Coadd_[e]':'%.2f', 'SKY_Aperture_Coadd_[e]':'%.2f'})
+ascii.write([lam, outaper[0], outaper[1], outaper[2], outapersky[1], outapercoadd[0], outapercoadd[1], outapercoadd[2], nexp*outapersky[1]], tmpdir+'/lvmetc_out_'+d["outpref"]+'.dat', format='commented_header', names=['Wavelength_[A]', 'S/N_Aperture', 'S_Aperture_[e]', 'N_Aperture_[e]', 'SKY_Aperture_[e]', 'S/N_Aperture_Coadd', 'S_Aperture_Coadd_[e]', 'N_Aperture_Coadd_[e]', 'SKY_Aperture_Coadd_[e]'], formats={'Wavelength_[A]':'%.3f', 'S/N_Aperture':'%.2f', 'S_Aperture_[e]':'%.2f', 'N_Aperture_[e]':'%.2f', 'SKY_Aperture_[e]':'%.2f', 'S/N_Aperture_Coadd':'%.2f', 'S_Aperture_Coadd_[e]':'%.2f', 'N_Aperture_Coadd_[e]':'%.2f', 'SKY_Aperture_Coadd_[e]':'%.2f'})
 
 logf.write(str(datetime.now() - startTime)+" - Done writing ASCII\n")
 
@@ -432,14 +434,14 @@ hdu4=fits.ImageHDU()
 hdul=fits.HDUList([hdu0, hdu1, hdu2, hdu3, hdu4])
 
 
-hdul.writeto(tmpdir+'/lvmetc_out.fits', overwrite=1)
+hdul.writeto(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits', overwrite=1)
 
-fits.update(tmpdir+'/lvmetc_out.fits', np.transpose(neobj2d+nesky2d+mkrandnoise(nenoise2d)), 1)
-fits.update(tmpdir+'/lvmetc_out.fits', np.transpose(neobj2d), 2)
-fits.update(tmpdir+'/lvmetc_out.fits', np.transpose(nesky2d), 3)
-fits.update(tmpdir+'/lvmetc_out.fits', np.transpose(nenoise2d), 4)
+fits.update(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits', np.transpose(neobj2d+nesky2d+mkrandnoise(nenoise2d)), 1)
+fits.update(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits', np.transpose(neobj2d), 2)
+fits.update(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits', np.transpose(nesky2d), 3)
+fits.update(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits', np.transpose(nenoise2d), 4)
 
-hdul=fits.open(tmpdir+'/lvmetc_out.fits')
+hdul=fits.open(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits')
 
 for i in np.arange(4):
     hdul[i+1].header.set('DISPAXIS', '1')
@@ -450,7 +452,7 @@ for i in np.arange(4):
     hdul[i+1].header.set('CD1_1', str(ddisp))
 
 
-hdul.writeto(tmpdir+'/lvmetc_out.fits', overwrite=1)
+hdul.writeto(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits', overwrite=1)
 hdul.close()
 
 logf.write(str(datetime.now() - startTime)+" - Done writing FITS\n")
@@ -505,7 +507,7 @@ logf.write(str(datetime.now() - startTime)+" - Done Plotting\n")
 
 
 plt.tight_layout()
-plt.savefig(tmpdir+'/lvmetc_out.png')
+plt.savefig(tmpdir+'/lvmetc_out_'+d["outpref"]+'.png')
 plt.show()
 #plt.savefig(sys.stdout, format='png')
 logf.write(str(datetime.now() - startTime)+" - Done Outputing Plots\n")

@@ -1,5 +1,9 @@
 Full set of options for configuration file inputs.  Default values are indicated below and included as a ready to use configuration file (config_file_default.txt).
 
+Prefix for output files, to distinguish different input parameters tested
+outpref		default
+
+
 Continuum Spectral Template
 template
 O5V_Pickles.dat         O5V star

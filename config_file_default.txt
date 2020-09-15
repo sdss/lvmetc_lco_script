@@ -1,3 +1,4 @@
+outpref		default
 template        A0V_Pickles.dat
 abmag           23.5
 tempfilter      sdss_g.dat
