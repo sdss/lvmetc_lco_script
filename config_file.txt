@@ -2,7 +2,7 @@ outpref		default
 template        A0V_Pickles.dat
 abmag           22.5
 tempfilter      sdss_g.dat
-addline         0
+addline         1
 linelam         6563.0
 lineflux        3e-18
 linefwhm        5.0
