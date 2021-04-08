@@ -5,7 +5,7 @@
 # 2017-08-08: This is a BETA Version written by Guillermo A. Blanc. It has not been validated. Use at your own risk.
 # 2020-09-15: Ported from a cgi web interface to a stand alone python script by Kathryn Kreckel.
 # 2020-09-28: New zeropoints and bug fixes ported from Guillermo's code
-
+# 2021-04-08: added 'run_lvmetc' function to facilitate importing this as a package 
 
 
 import os,sys
@@ -261,35 +261,37 @@ def mkstnaper(neobj2d, nenoise2d, aper):
 
 # PROGRAM STARTS HERE
 
-# LCOETC Database directory
-dbdir='database'
+def run_lvmetc(configfile):
+    # LCOETC Database directory
+    dbdir='database'
 
 # Temporary output directory
 #tmpdir='/Users/gblanc/lcoetc/tmp'
-tmpdir='output'
+    tmpdir='output'
 
 #read in the configuration parameters
-configfile="config_file.txt"
-d = {}
-with open(configfile) as f:
-    for line in f:
-       (key, val) = line.split()
-       d[key] = val
+    #configfile="config_file_standard_stars_F6.txt"
+    d = {}
+    with open(configfile) as f:
+        for line in f:
+           (key, val) = line.split()
+           d[key] = val
 
 # Remove temporary files
-if os.path.isfile(tmpdir+"/lvmetc_out_"+d["outpref"]+".dat"):
-    os.remove(tmpdir+"/lvmetc_out_"+d["outpref"]+".dat")
-if os.path.isfile(tmpdir+"/lvmetc_out_"+d["outpref"]+".fits"):
-    os.remove(tmpdir+"/lvmetc_out_"+d["outpref"]+".fits")
-if os.path.isfile(tmpdir+"/lvmetc_out_"+d["outpref"]+".png"):
-    os.remove(tmpdir+"/lvmetc_out_"+d["outpref"]+".png")
+    if os.path.isfile(tmpdir+"/lvmetc_out_"+d["outpref"]+".dat"):
+        os.remove(tmpdir+"/lvmetc_out_"+d["outpref"]+".dat")
+    if os.path.isfile(tmpdir+"/lvmetc_out_"+d["outpref"]+".fits"):
+        os.remove(tmpdir+"/lvmetc_out_"+d["outpref"]+".fits")
+    if os.path.isfile(tmpdir+"/lvmetc_out_"+d["outpref"]+".png"):
+        os.remove(tmpdir+"/lvmetc_out_"+d["outpref"]+".png")
 
-c=2.99792458e18   # Speed of light in [A/s]
+    c=2.99792458e18   # Speed of light in [A/s]
 
 # Check time and start log file
-startTime = datetime.now()
-logf=open(tmpdir+'/lvmetc_log_'+d["outpref"]+'.txt', 'w')
-logf.write(str(startTime)+' - Start\n')
+    startTime = datetime.now()
+    global logf
+    logf=open(tmpdir+'/lvmetc_log_'+d["outpref"]+'.txt', 'w')
+    logf.write(str(startTime)+' - Start\n')
 
 #Deals with inputing data into python from the html form
 #form = cgi.FieldStorage()
@@ -298,108 +300,108 @@ logf.write(str(startTime)+' - Start\n')
 
 
 # Define parameters from HTML Form
-ofile=dbdir+'/object/'+d["template"]
-abmag=float(d["abmag"])                              # [mag arcsec2]
-filfile=dbdir+'/filters/'+d["tempfilter"]
+    ofile=dbdir+'/object/'+d["template"]
+    abmag=float(d["abmag"])                              # [mag arcsec2]
+    filfile=dbdir+'/filters/'+d["tempfilter"]
 
-elamfile=dbdir+'/zeropoints/LVM_'+d["telescope"]+'_ELAM.dat'
+    elamfile=dbdir+'/zeropoints/LVM_'+d["telescope"]+'_ELAM.dat'
 
-binspec=int(d["binspec"])          # Binning in spectral direction [-]
-binspat=int(d["binspat"])          # Binning in spatial direction [-]
+    binspec=int(d["binspec"])          # Binning in spectral direction [-]
+    binspat=int(d["binspat"])          # Binning in spatial direction [-]
 
-nmoon=int(d["nmoon"])              # [-]
-amass=float(d["amass"])            # [amass]
-dpsf=float(d["dpsf"])              # [arcsec]
-sfile=dbdir+'/sky/LVM_'+d["telescope"]+'_SKY_'+str(nmoon)+'.dat'
+    nmoon=int(d["nmoon"])              # [-]
+    amass=float(d["amass"])            # [amass]
+    dpsf=float(d["dpsf"])              # [arcsec]
+    sfile=dbdir+'/sky/LVM_'+d["telescope"]+'_SKY_'+str(nmoon)+'.dat'
 
-texp=float(d["texp"])              # [s]
-nexp=int(d["nexp"])                # [-]
-aper=float(d["aper"])              # [arcsec]
+    texp=float(d["texp"])              # [s]
+    nexp=int(d["nexp"])                # [-]
+    aper=float(d["aper"])              # [arcsec]
 
 # Transmission file to use
-klamfile=dbdir+'/sky/LVM_'+d["telescope"]+'_KLAM.dat'
+    klamfile=dbdir+'/sky/LVM_'+d["telescope"]+'_KLAM.dat'
 
 # Read parameter file for TELESCOPE
-paramfile=dbdir+'/instruments/LVM_'+d["telescope"]+'_PARAM.dat'
+    paramfile=dbdir+'/instruments/LVM_'+d["telescope"]+'_PARAM.dat'
 
-params=ascii.read(paramfile)
+    params=ascii.read(paramfile)
 
-atel=float(params['col2'][params['col1']=='ATEL'])
-lmin=float(params['col2'][params['col1']=='LMIN'])
-lmax=float(params['col2'][params['col1']=='LMAX'])
-lrange=[lmin, lmax]
-dspax=float(params['col2'][params['col1']=='DSPAX'])
-dfib=float(params['col2'][params['col1']=='DFIB'])
-ddisp=float(params['col2'][params['col1']=='DDISP'])
-dlsf=float(params['col2'][params['col1']=='DLSF'])
-gain=float(params['col2'][params['col1']=='GAIN'])
-rdn=float(params['col2'][params['col1']=='RDN'])
-dark=float(params['col2'][params['col1']=='DARK'])
+    atel=float(params['col2'][params['col1']=='ATEL'])
+    lmin=float(params['col2'][params['col1']=='LMIN'])
+    lmax=float(params['col2'][params['col1']=='LMAX'])
+    lrange=[lmin, lmax]
+    dspax=float(params['col2'][params['col1']=='DSPAX'])
+    dfib=float(params['col2'][params['col1']=='DFIB'])
+    ddisp=float(params['col2'][params['col1']=='DDISP'])
+    dlsf=float(params['col2'][params['col1']=='DLSF'])
+    gain=float(params['col2'][params['col1']=='GAIN'])
+    rdn=float(params['col2'][params['col1']=='RDN'])
+    dark=float(params['col2'][params['col1']=='DARK'])
 
 # 2D spectra are 5 times the fiber FWHM tall
-nypix=dfib*5.                                 
+    nypix=dfib*5.                                 
 
-dfiblam=dfib*ddisp
+    dfiblam=dfib*ddisp
 
 # Apply binning in spatial and spectral directions
-dfib=dfib/binspat
-ddisp=ddisp*binspec
+    dfib=dfib/binspat
+    ddisp=ddisp*binspec
 
 
-logf.write(str(datetime.now() - startTime)+" - Done Defining Parameters\n")
+    logf.write(str(datetime.now() - startTime)+" - Done Defining Parameters\n")
 
 
 ## Create arrays 
 
 # Wavelength
-lam=mklam(lrange, ddisp)
+    lam=mklam(lrange, ddisp)
 
-logf.write(str(datetime.now() - startTime)+" - Done making lam array\n")
+    logf.write(str(datetime.now() - startTime)+" - Done making lam array\n")
 
 # Atmospheric Extinction Coefficient
-klam=mkklam(lam, dlsf, dfiblam, klamfile)
+    klam=mkklam(lam, dlsf, dfiblam, klamfile)
 
-logf.write(str(datetime.now() - startTime)+" - Done making klam array\n")
+    logf.write(str(datetime.now() - startTime)+" - Done making klam array\n")
 
 # Sky spectrum
-slam=mkslam(lam, dlsf, dfiblam, sfile)*np.pi*(dspax/2)**2
+    slam=mkslam(lam, dlsf, dfiblam, sfile)*np.pi*(dspax/2)**2
 
-logf.write(str(datetime.now() - startTime)+" - Done making slam array\n")
+    logf.write(str(datetime.now() - startTime)+" - Done making slam array\n")
 
 # Object Continuum Spectrum (scaled by spaxel area)
-if d['template'] != 'flat':
-    olam=mkolam(lam, dlsf, dfiblam, ofile, filfile, abmag)*np.pi*(dspax/2)**2
-else:
-    olam=10.0**(-0.4*(abmag+48.6))*c/lam**2*np.pi*(dspax/2)**2
+    if d['template'] != 'flat':
+        olam=mkolam(lam, dlsf, dfiblam, ofile, filfile, abmag)*np.pi*(dspax/2)**2
+    else:
+        olam=10.0**(-0.4*(abmag+48.6))*c/lam**2*np.pi*(dspax/2)**2
 
-logf.write(str(datetime.now() - startTime)+" - Done making flux arrays\n")
+    logf.write(str(datetime.now() - startTime)+" - Done making flux arrays\n")
     
     
 # Object Added Emission Line
-if d['addline'] == "1":
-    linelam=float(d['linelam'])
-    lineflux=float(d['lineflux'])
-    linefwhm=float(d['linefwhm'])
-    tmplam=mklinelam(lam, dlsf, dfiblam, linelam, lineflux, linefwhm)*np.pi*(dspax/2)**2/ddisp
-    olam=olam+tmplam
+    if d['addline'] == "1":
+        linelam=float(d['linelam'])
+        lineflux=float(d['lineflux'])
+        linefwhm=float(d['linefwhm'])
+        tmplam=mklinelam(lam, dlsf, dfiblam, linelam, lineflux, linefwhm)*np.pi*(dspax/2)**2/ddisp
+        olam=olam+tmplam
 
-logf.write(str(datetime.now() - startTime)+" - Done adding line to klam array\n")
+    logf.write(str(datetime.now() - startTime)+" - Done adding line to klam array\n")
 
     
 # System Throughput
-elam=mkelam(lam, elamfile)
+    elam=mkelam(lam, elamfile)
 
-logf.write(str(datetime.now() - startTime)+" - Done making elam array\n")
+    logf.write(str(datetime.now() - startTime)+" - Done making elam array\n")
 
 
 # Calculate electron counts and S/N for single exposure
-neobj=mkneobj(lam, olam, ddisp, texp, elam, atel, klam, amass)
-neobj2d=mkneobj2d(neobj, dfib, nypix)
-nesky=mknesky(lam, slam, ddisp, texp, elam, atel)
-nesky2d=mknesky2d(nesky, dfib, nypix)
-nenoise2d=mknenoise(neobj2d, nesky2d, rdn, dark, texp)
+    neobj=mkneobj(lam, olam, ddisp, texp, elam, atel, klam, amass)
+    neobj2d=mkneobj2d(neobj, dfib, nypix)
+    nesky=mknesky(lam, slam, ddisp, texp, elam, atel)
+    nesky2d=mknesky2d(nesky, dfib, nypix)
+    nenoise2d=mknenoise(neobj2d, nesky2d, rdn, dark, texp)
 
-logf.write(str(datetime.now() - startTime)+" - Done making electron arrays\n")
+    logf.write(str(datetime.now() - startTime)+" - Done making electron arrays\n")
 
 # The test below shows that 1.5*FWHM is ideal for APER and 2.5*FWHM for OPTIMAL. Using 2*FWHM
 #for i in np.arange(1, 3, 0.1):
@@ -408,132 +410,134 @@ logf.write(str(datetime.now() - startTime)+" - Done making electron arrays\n")
 #    print(np.median(outivar[0]), np.median(outaper[0]))
 
 #outivar=mkstnivar(neobj2d, nenoise2d, aper)
-outaper=mkstnaper(neobj2d, nenoise2d, aper)
-outapersky=mkstnaper(nesky2d, nenoise2d, aper)
+    outaper=mkstnaper(neobj2d, nenoise2d, aper)
+    outapersky=mkstnaper(nesky2d, nenoise2d, aper)
 #npixaper=int(np.median(outapersky[1]/nesky))
 
 # Calculate electron counts and S/N for coadd of nexp exposure
 
-neobj2dcoadd=nexp*neobj2d
-nenoise2dcoadd=np.sqrt(nexp)*nenoise2d
+    neobj2dcoadd=nexp*neobj2d
+    nenoise2dcoadd=np.sqrt(nexp)*nenoise2d
 #outivarcoadd=mkstnivar(neobj2dcoadd, nenoise2dcoadd, aper=2*dpsf/dpix)
-outapercoadd=mkstnaper(neobj2dcoadd, nenoise2dcoadd, aper)
+    outapercoadd=mkstnaper(neobj2dcoadd, nenoise2dcoadd, aper)
 
-logf.write(str(datetime.now() - startTime)+" - Done making S/N arrays\n")
+    logf.write(str(datetime.now() - startTime)+" - Done making S/N arrays\n")
 
 # Write ASCII files with output 1D spectra / noise / S/N / realization
 
 #ascii.write([lam, outivar[0], outivar[1], outivar[2], outaper[0], outaper[1], outaper[2], outapersky[1]], tmpdir+'/lvmetc_out.dat', format='commented_header', names=['Wavelength_[A]', 'S/N_Optimal', 'S_Optimal_[e]', 'N_Optimal_[e]', 'S/N_Aperture', 'S_Aperture_[e]', 'N_Aperture_[e]', 'SKY_Aperture_[e]'], formats={'Wavelength_[A]':'%.3f', 'S/N_Optimal':'%.2f', 'S_Optimal_[e]':'%.2f', 'N_Optimal_[e]':'%.2f', 'S/N_Aperture':'%.2f', 'S_Aperture_[e]':'%.2f', 'N_Aperture_[e]':'%.2f', 'SKY_Aperture_[e]':'%.2f'})
 
-ascii.write([lam, outaper[0], outaper[1], outaper[2], outapersky[1], outapercoadd[0], outapercoadd[1], outapercoadd[2], nexp*outapersky[1]], tmpdir+'/lvmetc_out.dat', format='commented_header', names=['Wavelength_[A]', 'S/N_Aperture', 'S_Aperture_[e]', 'N_Aperture_[e]', 'SKY_Aperture_[e]', 'S/N_Aperture_Coadd', 'S_Aperture_Coadd_[e]', 'N_Aperture_Coadd_[e]', 'SKY_Aperture_Coadd_[e]'], formats={'Wavelength_[A]':'%.3f', 'S/N_Aperture':'%.2f', 'S_Aperture_[e]':'%.2f', 'N_Aperture_[e]':'%.2f', 'SKY_Aperture_[e]':'%.2f', 'S/N_Aperture_Coadd':'%.2f', 'S_Aperture_Coadd_[e]':'%.2f', 'N_Aperture_Coadd_[e]':'%.2f', 'SKY_Aperture_Coadd_[e]':'%.2f'},overwrite=True)
+    ascii.write([lam, outaper[0], outaper[1], outaper[2], outapersky[1], outapercoadd[0], outapercoadd[1], outapercoadd[2], nexp*outapersky[1]], tmpdir+'/lvmetc_out.dat', format='commented_header', names=['Wavelength_[A]', 'S/N_Aperture', 'S_Aperture_[e]', 'N_Aperture_[e]', 'SKY_Aperture_[e]', 'S/N_Aperture_Coadd', 'S_Aperture_Coadd_[e]', 'N_Aperture_Coadd_[e]', 'SKY_Aperture_Coadd_[e]'], formats={'Wavelength_[A]':'%.3f', 'S/N_Aperture':'%.2f', 'S_Aperture_[e]':'%.2f', 'N_Aperture_[e]':'%.2f', 'SKY_Aperture_[e]':'%.2f', 'S/N_Aperture_Coadd':'%.2f', 'S_Aperture_Coadd_[e]':'%.2f', 'N_Aperture_Coadd_[e]':'%.2f', 'SKY_Aperture_Coadd_[e]':'%.2f'},overwrite=True)
 
 
-logf.write(str(datetime.now() - startTime)+" - Done writing ASCII\n")
+    logf.write(str(datetime.now() - startTime)+" - Done writing ASCII\n")
 
 # Write FITS files with simulated data (in units of electrons)
 
-hdu0=fits.PrimaryHDU()
-hdu1=fits.ImageHDU()
-hdu2=fits.ImageHDU()
-hdu3=fits.ImageHDU()
-hdu4=fits.ImageHDU()
-hdul=fits.HDUList([hdu0, hdu1, hdu2, hdu3, hdu4])
+    hdu0=fits.PrimaryHDU()
+    hdu1=fits.ImageHDU()
+    hdu2=fits.ImageHDU()
+    hdu3=fits.ImageHDU()
+    hdu4=fits.ImageHDU()
+    hdul=fits.HDUList([hdu0, hdu1, hdu2, hdu3, hdu4])
 
 
-hdul.writeto(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits', overwrite=1)
+    hdul.writeto(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits', overwrite=1)
 
-fits.update(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits', np.transpose(neobj2d+nesky2d+mkrandnoise(nenoise2d)), 1)
-fits.update(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits', np.transpose(neobj2d), 2)
-fits.update(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits', np.transpose(nesky2d), 3)
-fits.update(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits', np.transpose(nenoise2d), 4)
+    fits.update(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits', np.transpose(neobj2d+nesky2d+mkrandnoise(nenoise2d)), 1)
+    fits.update(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits', np.transpose(neobj2d), 2)
+    fits.update(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits', np.transpose(nesky2d), 3)
+    fits.update(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits', np.transpose(nenoise2d), 4)
 
-hdul=fits.open(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits')
+    hdul=fits.open(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits')
 
-for i in np.arange(4):
-    hdul[i+1].header.set('DISPAXIS', '1')
-    hdul[i+1].header.set('CTYPE1', 'LINEAR')
-    hdul[i+1].header.set('CUNIT1', 'Angstroms')
-    hdul[i+1].header.set('CRPIX1', '1')
-    hdul[i+1].header.set('CRVAL1', str(lam[0]))
-    hdul[i+1].header.set('CD1_1', str(ddisp))
+    for i in np.arange(4):
+        hdul[i+1].header.set('DISPAXIS', '1')
+        hdul[i+1].header.set('CTYPE1', 'LINEAR')
+        hdul[i+1].header.set('CUNIT1', 'Angstroms')
+        hdul[i+1].header.set('CRPIX1', '1')
+        hdul[i+1].header.set('CRVAL1', str(lam[0]))
+        hdul[i+1].header.set('CD1_1', str(ddisp))
 
 
-hdul.writeto(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits', overwrite=1)
-hdul.close()
+    hdul.writeto(tmpdir+'/lvmetc_out_'+d["outpref"]+'.fits', overwrite=1)
+    hdul.close()
 
-logf.write(str(datetime.now() - startTime)+" - Done writing FITS\n")
+    logf.write(str(datetime.now() - startTime)+" - Done writing FITS\n")
 
 
 # Calculate emission line S/N in 3 pixel window
-if  d['addline'] == "1":
-    ind=ind=np.abs(lam - linelam).argmin()
-    snrline=np.sum(outaper[1][ind-1:ind+2])/np.sqrt(np.sum(outaper[2][ind-1:ind+2]**2))
-    snrlinecoadd=np.sum(outapercoadd[1][ind-1:ind+2])/np.sqrt(np.sum(outapercoadd[2][ind-1:ind+2]**2))
+    if  d['addline'] == "1":
+        ind=ind=np.abs(lam - linelam).argmin()
+        snrline=np.sum(outaper[1][ind-1:ind+2])/np.sqrt(np.sum(outaper[2][ind-1:ind+2]**2))
+        snrlinecoadd=np.sum(outapercoadd[1][ind-1:ind+2])/np.sqrt(np.sum(outapercoadd[2][ind-1:ind+2]**2))
  
 
 
 # Make Plots
-plt.close()
-plt.figure(1, figsize=(12,10))
+    plt.close()
+    plt.figure(1, figsize=(12,10))
 
-plt.subplot(221)
+    plt.subplot(221)
 #plt.plot(lam, outivar[0], 'b', label='S/N Optimal')
-if d['addline'] == "1":
-    plt.plot(lam, outaper[0], 'r', label='S/N Line (3 pix) ='+"{:.2f}".format(snrline))
-plt.plot(lam, outaper[0], 'r', label='S/N Aperture')
-plt.legend(loc=0, fontsize=10)
-plt.title('Single '+str(texp)+' sec. Exposure - '+str(aper)+' Pixel Extraction Aperture')
-plt.ylabel("S/N per binned spectral pixel")
-plt.xlabel('Wavelength')
+    if d['addline'] == "1":
+        plt.plot(lam, outaper[0], 'r', label='S/N Line (3 pix) ='+"{:.2f}".format(snrline))
+    plt.plot(lam, outaper[0], 'r', label='S/N Aperture')
+    plt.legend(loc=0, fontsize=10)
+    plt.title('Single '+str(texp)+' sec. Exposure - '+str(aper)+' Pixel Extraction Aperture')
+    plt.ylabel("S/N per binned spectral pixel")
+    plt.xlabel('Wavelength')
 #plt.axis([5000, 6000, 0, 10])
 
-plt.subplot(223)
+    plt.subplot(223)
 # plt.plot(lam, outivar[1], 'b--', label='SIGNAL Optimal')
 # plt.plot(lam, outivar[2], 'g--', label='NOISE Optimal')
-plt.plot(lam, outaper[1], 'b', label='SIGNAL Aperture')
-plt.plot(lam, outaper[2], 'g', label='NOISE Aperture')
-plt.plot(lam, outapersky[1], 'r', label='SKY Aperture')
-plt.yscale('log')
-plt.legend(loc=0, fontsize=10)
-plt.ylabel("electrons per binned spectral pixel")
-plt.xlabel('Wavelength')
+    plt.plot(lam, outaper[1], 'b', label='SIGNAL Aperture')
+    plt.plot(lam, outaper[2], 'g', label='NOISE Aperture')
+    plt.plot(lam, outapersky[1], 'r', label='SKY Aperture')
+    plt.yscale('log')
+    plt.legend(loc=0, fontsize=10)
+    plt.ylabel("electrons per binned spectral pixel")
+    plt.xlabel('Wavelength')
 
-plt.subplot(222)
+    plt.subplot(222)
 #plt.plot(lam, outivarcoadd[0], 'b', label='S/N Optimal')
-if d['addline'] == "1":
-    plt.plot(lam, outaper[0], 'r', label='S/N Line (3 pix) ='+"{:.2f}".format(snrlinecoadd))
-plt.plot(lam, outapercoadd[0], 'r', label='S/N Aperture')
-plt.yscale('linear')
-plt.legend(loc=0, fontsize=10)
-plt.title(str(nexp)+' x '+str(texp)+' sec. Exposures - '+str(aper)+' Pixel Extraction Aperture')
-plt.ylabel("S/N per binned spectral pixel")
-plt.xlabel('Wavelength')
+    if d['addline'] == "1":
+        plt.plot(lam, outaper[0], 'r', label='S/N Line (3 pix) ='+"{:.2f}".format(snrlinecoadd))
+    plt.plot(lam, outapercoadd[0], 'r', label='S/N Aperture')
+    plt.yscale('linear')
+    plt.legend(loc=0, fontsize=10)
+    plt.title(str(nexp)+' x '+str(texp)+' sec. Exposures - '+str(aper)+' Pixel Extraction Aperture')
+    plt.ylabel("S/N per binned spectral pixel")
+    plt.xlabel('Wavelength')
 #plt.axis([5000, 6000, 0, 10])
 
-plt.subplot(224)
+    plt.subplot(224)
 # plt.plot(lam, outivarcoadd[1], 'b--', label='SIGNAL Optimal')
 # plt.plot(lam, outivarcoadd[2], 'g--', label='NOISE Optimal')
-plt.plot(lam, outapercoadd[1], 'b', label='SIGNAL Aperture')
-plt.plot(lam, outapercoadd[2], 'g', label='NOISE Aperture')
-plt.plot(lam, nexp*outapersky[1], 'r', label='SKY Aperture')
-plt.yscale('log')
-plt.legend(loc=0, fontsize=10)
-plt.ylabel("electrons per binned spectral pixel")
-plt.xlabel('Wavelength')
+    plt.plot(lam, outapercoadd[1], 'b', label='SIGNAL Aperture')
+    plt.plot(lam, outapercoadd[2], 'g', label='NOISE Aperture')
+    plt.plot(lam, nexp*outapersky[1], 'r', label='SKY Aperture')
+    plt.yscale('log')
+    plt.legend(loc=0, fontsize=10)
+    plt.ylabel("electrons per binned spectral pixel")
+    plt.xlabel('Wavelength')
 #plt.show()
 
-logf.write(str(datetime.now() - startTime)+" - Done Plotting\n")
+    logf.write(str(datetime.now() - startTime)+" - Done Plotting\n")
 
 
-plt.tight_layout()
-plt.savefig(tmpdir+'/lvmetc_out_'+d["outpref"]+'.png')
-plt.show()
+    plt.tight_layout()
+    plt.savefig(tmpdir+'/lvmetc_out_'+d["outpref"]+'.png')
+    plt.show()
 #plt.savefig(sys.stdout, format='png')
-logf.write(str(datetime.now() - startTime)+" - Done Outputing Plots\n")
+    logf.write(str(datetime.now() - startTime)+" - Done Outputing Plots\n")
 
 #zp2=elam2zp(0.16, lam, 1.0, 1.0, 1.0, atel, klam, 1.0)
 
 
-logf.write(str(datetime.now() - startTime)+" - End\n")
-logf.close()
+    logf.write(str(datetime.now() - startTime)+" - End\n")
+    logf.close()
 
+if __name__ == '__main__':
+    run_lvmetc('config_file_default.txt')
