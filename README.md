@@ -19,6 +19,7 @@ original files can be found here: https://github.com/gblancm/lcoetc
 
 2021-04-08: added 'run_lvmetc' function to facilitate importing this as a package 
 
+2022-01-31: fixed a typo on the default FWHM for emission lines added to input spectrum. Added example 'use case' for NGC 253.
 
 === 
 TO DO: 
