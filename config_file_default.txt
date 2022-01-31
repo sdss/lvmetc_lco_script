@@ -5,7 +5,7 @@ tempfilter      sdss_g.dat
 addline         1
 linelam         6563.0
 lineflux        3e-18
-linefwhm        5.0
+linefwhm        .50
 telescope       LVM160
 binspat         1
 binspec         1

@@ -44,7 +44,7 @@ lineflux
 
 Line FWHM [A]
 linefwhm
-5.0     (default value)
+0.5     (default value)
 
 ===========
 Instrumental Setup
